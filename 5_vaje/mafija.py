@@ -40,16 +40,17 @@ class Drevo(Drevo):
         """Vrne koliko denarja izgine zaradi goljufij."""
         if self.prazno():
             return 0
-        if self.levoPoddrevo().prazno() and self.desnoPoddrevo().prazno():
-            return 0
-        if self.vrniPodatek() - (self.levoPoddrevo().vrniPodatek() + self.desnoPoddrevo().vrniPodatek()) > 0:
-            return 0 + self.levoPoddrevo().koliko_ponikne() + self.desnoPoddrevo().koliko_ponikne()
-        if self.levoPoddrevo().prazno():
-            return self.vrniPodatek() - self.desnoPoddrevo().vrniPodatek() + self.desnoPoddrevo().koliko_ponikne()
-        if self.desnoPoddrevo().prazno():
-            return self.vrniPodatek() - self.levoPoddrevo().vrniPodatek() + self.levoPoddrevo().koliko_ponikne()
-        return self.vrniPodatek() - (self.levoPoddrevo().vrniPodatek() + self.desnoPoddrevo().vrniPodatek()) + self.levoPoddrevo().koliko_ponikne() + self.desnoPoddrevo().koliko_ponikne()
-
+        #pridobimo podatke o zbranem denarju obeh podrejenih, ki sta v korenih levega in desnega poddrevesa
+        levi_denar = self.levoPoddrevo().vrniPodatek() if not self.levoPoddrevo().prazno() else 0
+        desni_denar = self.desnoPoddrevo().vrniPodatek() if not self.desnoPoddrevo().prazno() else 0
+        
+        stanje_denarja = self.vrniPodatek() - levi_denar - desni_denar
+        #v primeru da je stanje_denarja negativno pomeni, da je oseba v korenu odtujila neko kolicino denarja
+        if stanje_denarja < 0:
+            #poleg odtujenega denarja pri tej osebi pristejemo se ves odtujeni denar iz obeh poddreves
+            return abs(stanje_denarja) + Drevo.koliko_ponikne(self.levoPoddrevo()) + Drevo.koliko_ponikne(self.desnoPoddrevo())
+        #ker trenutna oseba ni odtujila denarja, moramo sesteti samo odtujeni denar iz obeh ostalih poddreves
+        return Drevo.koliko_ponikne(self.levoPoddrevo()) + Drevo.koliko_ponikne(self.desnoPoddrevo())
 
 # =====================================================================@022306=
 # 2. podnaloga
@@ -62,6 +63,27 @@ class Drevo(Drevo):
 #     >>> mafija.goljufi()
 #     {(’Carlo’, 20), (’Francesco’, 10)}
 # =============================================================================
+
+    def goljufi(self):
+        """Vrne mnozico parov, v katerih so izpisana imena goljufov in koliko denarja so odtujili"""
+        if self.prazno():
+            return set()
+
+        #pridobimo podatke o zbranem denarju obeh podrejenih, ki sta v korenih levega in desnega poddrevesa
+        levi_denar = self.levoPoddrevo().vrniPodatek() if not self.levoPoddrevo().prazno() else 0
+        desni_denar = self.desnoPoddrevo().vrniPodatek() if not self.desnoPoddrevo().prazno() else 0
+
+        stanje_denarja = self.vrniPodatek() - levi_denar - desni_denar
+        #dodamo osebo v množico, če oseba ni kradla bo vseeno dodana v množico, vendar jo nebomo uporabili zaradi sledečega if stavka
+        mnozica = set()
+        mnozica.add((self.vrniIme(), abs(stanje_denarja)))
+        if stanje_denarja < 0:
+
+            #v primeru, da je stanje_denarja negativno pomeni,
+            #da je oseba v korenu odtujila denar in moramo uporabiti množico, v katero smo ga dodali
+            return mnozica.union(Drevo.goljufi(self.levoPoddrevo()), Drevo.goljufi(self.desnoPoddrevo()))
+            
+        return Drevo.goljufi(self.levoPoddrevo()).union(Drevo.goljufi(self.desnoPoddrevo()))
 
 # =====================================================================@022307=
 # 3. podnaloga
@@ -80,6 +102,10 @@ class Drevo(Drevo):
 #     (300, 50)
 # =============================================================================
 
+    def zasluzek(self):
+        """Vrne par, v katerem je prva vrednost vsota zasluzkov vseh majhnih rib in drugo stevilo 
+        vsota zasluzkov velikih rib."""
+        return
 
 
 
