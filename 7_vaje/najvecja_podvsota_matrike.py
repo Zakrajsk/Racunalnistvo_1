@@ -20,8 +20,13 @@
 # linearnem času (v odvisnosti od velikosti matrike).
 # =============================================================================
 def matrika_delnih_vsot(matrika):
-    """vrne matriko delnih vsot, v kateri je na vsakem mestu vsota vseh elementov v bloku levo zgoraj.
-    
+    """vrne matriko delnih vsot, v kateri je na vsakem mestu vsota vseh elementov v bloku levo zgoraj"""
+    st_stolpcev = len(matrika)
+    st_vrstic = len(matrika[0])
+    for i in range(st_vrstic):
+        for j in range(st_stolpcev):
+            if i == 1:
+                matrika[i][j] = sum[matrika[i][st_stolpcev - j]]
 # =====================================================================@022774=
 # 2. podnaloga
 # Sestavite funkcijo `vsota_podmatrike(delne_vsote, i1, j1, i2, j2)`, ki iz
