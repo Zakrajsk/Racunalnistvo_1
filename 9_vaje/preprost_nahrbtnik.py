@@ -32,21 +32,20 @@
 
 def nahrbtnik(predmeti, velikost):
     p = list(enumerate(predmeti))
-    p.sort(key=lambda t: t[1] / t[0])
+    p.sort(key=lambda t: -t[1][1] / t[1][0])
     v = 0
     x = [0] * len(predmeti)
     for i in range(len(p)):
-        k =
-        vel =
+        k = p[i][0]
+        vel = p[i][1][0]
         if v + vel <= velikost:
             x[k] = 1
             v += vel
         else:
             if v != velikost:
-                x[k] =
+                x[k] = (velikost - v) / vel
             break
     return x
-
 
 
 

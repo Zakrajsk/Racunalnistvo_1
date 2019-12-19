@@ -49,9 +49,28 @@ def sestaviZ(s, predmet):
 # =============================================================================
 
 def sestaviS(s, z):
-    """Funckija sestavi in vrne mnozico Si+1, ki jo sestavi z s in z"""
-    
-
+    """iz mnozic Si in Zi+1 sestavi mnozica Si+1"""
+    i = 0
+    j = 0
+    S = []
+    while i < len(s) and j < len(z):
+        if s[i][0] < z[j][0]:
+            S.append(s[i])
+            i += 1
+        elif s[i][0] > z[j][0]:
+            S.append(z[j])
+            j += 1
+        else:
+            S.append(s[i] if s[i][1] > z[j][1] else z[j])
+            i += 1
+            j += 1
+        while i < len(s) and s[i][1] <= S[-1][1]:
+            i += 1
+        while j < len(z) and z[j][1] <= S[-1][1]:
+            j += 1
+    S += s[i:]
+    S += z[j:]
+    return S
 # =====================================================================@023183=
 # 4. podnaloga
 # Sestavi funkcijo `mnoziceS(predmeti)`, ki za dani seznam predmetov,
@@ -63,7 +82,12 @@ def sestaviS(s, z):
 #        (6,10),(8,12),(10,15)],[(0,0),(2,3),(4,7),(6,10),(8,12),(10,15),
 #        (12,18),(14,20),(16,23)]]
 # =============================================================================
-
+def mnoziceS(predmeti):
+    """Sestavi in vrne seznam vseh mnozic"""
+    mnozica_vseh = [[(0, 0)]]
+    for el in predmeti:
+        mnozica_vseh.append(sestaviS(mnozica_vseh[-1], sestaviZ(mnozica_vseh[-1], el)))
+    return mnozica_vseh
 # =====================================================================@023184=
 # 5. podnaloga
 # Sestavi funkcijo `nahrbtnik01(predmeti, velikost)`, ki reši problem
@@ -74,7 +98,15 @@ def sestaviS(s, z):
 #     >>> nahrbtnik01([(2,3),(4,5),(4,7),(6,8)], 9)
 #     (8,12)
 # =============================================================================
-
+def nahrbtnik01(predmeti, velikost):
+    """Vrne skupno velikost in vrednost predmetov, ki jih damo v nahrbtnik"""
+    mnozice_vseh = mnoziceS(predmeti)[-1]
+    prejsnja = (0, 0)
+    for ena in mnozice_vseh:
+        if ena[0] > velikost:
+            return prejsnja
+        prejsnja = ena
+    return prejsnja
 # =====================================================================@023185=
 # 6. podnaloga
 # Sestavi funkcijo `resitev01(predmeti, velikost)`, ki reši problem 0/1
@@ -85,6 +117,19 @@ def sestaviS(s, z):
 #     >>> resitev01([(2,3),(4,5),(4,7),(6,8)], 9)
 #     [0, 1, 1, 0]
 # =============================================================================
+
+def resitev01(predmeti, velikost):
+    '''vrne seznam nicel in enic, ki dolocajo katere predmete moramo izbrati'''
+    resitev = nahrbtnik01(predmeti, velikost)
+    vsi_S = mnoziceS(predmeti)[::-1][1:]
+    seznam_resitev = list()
+    for s in vsi_S:
+        if resitev in s:
+            seznam_resitev.append(0)
+        else:
+            seznam_resitev.append(1)
+            resitev = (resitev[0] - predmeti[-len(seznam_resitev)][0], resitev[1] - predmeti[-len(seznam_resitev)][1])
+    return seznam_resitev[::-1]
 
 # =====================================================================@023186=
 # 7. podnaloga
