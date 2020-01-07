@@ -18,32 +18,24 @@
 # =============================================================================
 
 def stevilo_mnozenj(matrices):
-    # Ideally do error checking to make sure the columns of
-    # each matrix match the rows of the next matrix.
+    """Vrne najmanjse stevilo mnozenj iz podanih velikosti matrik"""
 
-    def cols(i): return matrices[i][1]
-    def rows(i): return matrices[i][0]
+    def stolpci(i): return matrices[i][1]
+    def vrstice(i): return matrices[i][0]
 
-    n = len(matrices)
-    f = {}  # cached values of the recurrence relation
+    st_matrik = len(matrices)
+    slovar_izracunanih = {}
 
-    for l in range(1, n + 1):
-        for start in range(0, n - l + 1):
-            # Base case
-            if l == 1:
-                f[(start, start)] = 0
+    for i in range(1, st_matrik + 1):
+        for start in range(0, st_matrik - i + 1):
+            if i == 1:
+                slovar_izracunanih[(start, start)] = 0
                 continue
+            end = start + i - 1
+            slovar_izracunanih[(start, end)] = min(slovar_izracunanih[(start, mid)] + slovar_izracunanih[(mid + 1, end)]
+            + vrstice(start) * stolpci(mid) * stolpci(end) for mid in range(start, end))
 
-            # Recursive case
-            end = start + l - 1
-            f[(start, end)] = min(
-                f[(start, mid)] +
-                f[(mid + 1, end)] +
-                rows(start) * cols(mid) * cols(end)
-                for mid in range(start, end)  # end is exclusive
-            )
-
-    return f[(0, n - 1)]
+    return slovar_izracunanih[(0, st_matrik - 1)]
 
 # =====================================================================@023344=
 # 2. podnaloga
@@ -54,13 +46,31 @@ def stevilo_mnozenj(matrices):
 #     '((A1(A2(A3A4)))A5)'
 # =============================================================================
 
+def vrstni_red(matrike):
+    """Vrne vrstni red množenja matrik, ki potrebuje najmanjše število operacih za izračun"""
+    matrika = list()
+    st_matrik = len(matrike)
+    for _ in range(st_matrik):
+        matrika.append([(0,'')] * st_matrik)
 
-
-
-
-
-
-
+    for i in range(st_matrik):
+        matrika[i][i] = (0, 'A{0}'.format(i+1))
+        
+    for diagonala in range(1, st_matrik):
+        i = 0
+        j = diagonala
+        while i < st_matrik  and j < st_matrik :
+            slovar = dict()
+            for ind in range(diagonala):
+                prvi = matrika[i][j - ind - 1]
+                drugi = matrika[i + diagonala - ind][j]
+                mnozenje = matrike[i][0] * matrike[j - ind - 1][1] * matrike[j][1]
+                slovar[prvi[0] + drugi[0] + mnozenje] = '({0}{1})'.format(prvi[1], drugi[1])
+            najmanj = min(slovar)
+            matrika[i][j] = (najmanj, slovar[najmanj])
+            i += 1
+            j += 1
+    return matrika[0][st_matrik - 1][1]
 
 
 
